@@ -21,6 +21,7 @@ public class AppController {
         connectionManager = new DBConnectionManager();
         sessionManager = new UserSessionManager();
         loginView = new LoginView(new LoginButtonListener());
+        
 
         try {
             // Cargar información de conexión desde el archivo XML para "client" al inicio
@@ -43,7 +44,7 @@ public class AppController {
 
             try {
                 // Realizar verificación de credenciales en la base de datos
-                connectionManager.loadConnectionInfoFromXML(username.equals("admin") ? "src/main/resources/admin.xml" : "src/main/resources/client.xml");
+                connectionManager.loadConnectionInfoFromXML(username.equals("admin") ? "admin.xml" : "client.xml");
 
                 // Manejar la lógica de inicio de sesión aquí
                 if (username.equals("admin")) {

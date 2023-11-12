@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.swing.JTextArea;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -107,16 +108,12 @@ public class DBConnectionManager {
      * @return El conjunto de resultados de la consulta.
      * @throws SQLException Si ocurre un error durante la ejecución de la consulta.
      */
-    public ResultSet executeQuery(String sql) throws SQLException {
-        // Lógica para ejecutar una consulta SQL y devolver el resultado
-
+    public ResultSet executeQuery(String query) throws SQLException {
         Statement statement = connection.createStatement();
-       
-        ResultSet resultSet = statement.executeQuery(sql);
-        
-        return resultSet;
+        return statement.executeQuery(query);
     }
-
 }
+
+
 
 	

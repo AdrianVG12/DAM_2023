@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -15,6 +16,7 @@ import java.sql.SQLException;
 public class MainView extends JFrame {
     private JTextArea resultArea;
     private DBConnectionManager dbConnectionManager;
+    private JTextField queryField;
     
     
     /**
@@ -25,6 +27,7 @@ public class MainView extends JFrame {
      */
     public MainView(ActionListener logoutButtonListener, ActionListener closeButtonListener) {
         super("Aplicación MVC - Base de Datos");
+        this.dbConnectionManager = dbConnectionManager;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout());
 
@@ -35,6 +38,31 @@ public class MainView extends JFrame {
         logoutButton.addActionListener(logoutButtonListener);
         getContentPane().add(logoutButton, BorderLayout.NORTH);
 
+        JButton executeButton = new JButton("Ejecutar Consulta");
+        executeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String query = queryField.getText();
+                try {
+                    ResultSet resultSet = dbConnectionManager.executeQuery(query);
+
+                    StringBuilder resultText = new StringBuilder();
+                    while (resultSet.next()) {
+                        resultText.append(resultSet.getString(1)).append("\n");
+                        // Ajusta este código según la estructura de tu base de datos y las columnas que deseas mostrar
+                    }
+                    resultArea.setText(resultText.toString());
+
+                    // Cerrar el ResultSet y liberar recursos
+                    resultSet.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    resultArea.setText("Error al ejecutar la consulta: " + ex.getMessage());
+                }
+            }
+        });
+        getContentPane().add(executeButton, BorderLayout.EAST);
+        
         JButton closeButton = new JButton("Cerrar Conexión");
         closeButton.addActionListener(new ActionListener() {
             @Override
