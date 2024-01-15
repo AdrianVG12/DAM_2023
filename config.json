@@ -1,0 +1,10 @@
+{
+  "ip": "localhost",
+  "puerto": 27017,
+  "baseDeDatos": "memory",
+  "colecciones": [
+    "img",
+    "records",
+    "usuarios"
+  ]
+}
