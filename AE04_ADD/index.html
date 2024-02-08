@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POKEDEX</title>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+/**
+ * Función que obtiene la información de un Pokémon utilizando la API de PokeAPI.
+ */
+function getPokemonInfo() {
+    var pokemonName = document.getElementById('pokemonName').value;
+    axios
+    .get("https://pokeapi.co/api/v2/pokemon/" + pokemonName.toLowerCase())
+    .then(response => {
+        console.log(response.data);
+        document.getElementById('pokemonNameDisplay').innerText = "Name: " + response.data.name;
+        document.getElementById('pokemonTypeDisplay').innerText = "Type: " + response.data.types.map(type => type.type.name).join(", ");
+        document.getElementById('pokemonAbilitiesDisplay').innerText = "Abilities: " + response.data.abilities.map(ability => ability.ability.name).join(", ");
+        document.getElementById('pokemonImage').src = response.data.sprites.front_default;
+        document.getElementById('pokemonImage').style.display = "block"; 
+        document.getElementById('saveButton').disabled = false; 
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Error en la consulta: " + error);
+        // Ocultar la imagen en caso de error
+        document.getElementById('pokemonImage').style.display = "none";
+        document.getElementById('saveButton').disabled = true; // Deshabilitar el botón de guardar en caso de error
+    });
+}
+
+/**
+ * Función que guarda la información del Pokémon en una base de datos.
+ */
+function guardarInfo() {
+    var pokemonName = document.getElementById('pokemonName').value;
+    var pokemonType = document.getElementById('pokemonTypeDisplay').innerText.split(":")[1].trim();
+    var pokemonAbilities = document.getElementById('pokemonAbilitiesDisplay').innerText.split(":")[1].trim();
+    var pokemonImageUrl = document.getElementById('pokemonImage').src;
+
+    
+    $.ajax({
+        type: "POST",
+        url: "guardar_pokemon.php",
+        data: {
+            name: pokemonName,
+            type: pokemonType,
+            abilities: pokemonAbilities,
+            image_url: pokemonImageUrl
+        },
+        success: function(response) {
+            alert(response);
+        },
+        error: function() {
+            alert("Error al guardar los datos del Pokémon.");
+        }
+    });
+}
+
+/**
+ * Función que muestra todos los Pokémon registrados en la Pokédex.
+ */
+function mostrarPokemons() {
+    axios.get("recuperar_pokemon.php")
+    .then(response => {
+        console.log(response.data);
+        // Limpiar la sección de resultados
+        document.getElementById('pokemonList').innerHTML = "";
+
+        // Iterar sobre los datos recibidos y mostrarlos en la página
+        response.data.forEach(pokemon => {
+            var listItem = document.createElement('li');
+            listItem.textContent = pokemon.name + " - " + pokemon.type;
+            document.getElementById('pokemonList').appendChild(listItem);
+            
+        });
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Error al recuperar los Pokémon: " + error);
+    });
+}
+</script>
+</head>
+<body>
+<h1>POKEDEX DE LA REGIÓN DE FLORIDA</h1>
+<p>Pokémon:</p>
+<p><input type="text" value="" id="pokemonName">
+<button id="searchButton" onclick="getPokemonInfo()">Buscar</button>
+</p>
+<img id="pokemonImage" src="" height="150" style="display: none;">
+<p id="pokemonNameDisplay"></p>
+<p id="pokemonTypeDisplay"></p>
+<p id="pokemonAbilitiesDisplay"></p>
+<button id="saveButton" onclick="guardarInfo()" disabled>Guardar</button>
+
+<button onclick="mostrarPokemons()">Pokemons registrados en la Pokedex (la BBDD)</button>
+<ul id="pokemonList"></ul>
+<style>
+   
+    body {
+    background-color: #3f3f3fd7; 
+}
+    h1 {
+        font-family: Arial, sans-serif; 
+        font-size: 24px; 
+        color: #ff0000; 
+        margin-bottom: 20px; 
+        text-decoration: underline;
+
+    }
+    p {
+        font-family: Arial, sans-serif;
+        color: #ff9100; 
+    }
+    ul {
+        font-family: Arial, sans-serif;
+        color: #f80000; 
+    }
+    </style>
+</body>
+</html>
